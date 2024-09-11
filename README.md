@@ -80,5 +80,5 @@ Don't see what you're looking for in the list above? You can easily define your 
 
 ## Installation
 
-- Add `.package(url: "https://github.com/Maxim-Lanskoy/ShellOut.git", branch: "main")` to your `Package.swift` file's `dependencies`.
+- Add `.package(url: "https://github.com/Maxim-Lanskoy/ShellOut.git", from: "2.3.1")` to your `Package.swift` file's `dependencies`.
 - Update your packages using `$ swift package update`.
