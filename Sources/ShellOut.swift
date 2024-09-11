@@ -16,6 +16,8 @@ import Dispatch
  *  - parameter arguments: The arguments to pass to the command
  *  - parameter path: The path to execute the commands at (defaults to current folder)
  *  - parameter process: Which process to use to perform the command (default: A new one)
+ *  - parameter inputHandle: Any `FileHandle` that any input (STDIN) should be redirected to
+ *              (at the moment this is only supported on macOS)
  *  - parameter outputHandle: Any `FileHandle` that any output (STDOUT) should be redirected to
  *              (at the moment this is only supported on macOS)
  *  - parameter errorHandle: Any `FileHandle` that any error output (STDERR) should be redirected to
@@ -32,6 +34,7 @@ import Dispatch
     arguments: [String] = [],
     at path: String = ".",
     process: Process = .init(),
+    inputHandle: FileHandle? = nil,
     outputHandle: FileHandle? = nil,
     errorHandle: FileHandle? = nil,
     shellType: ShellType = .bashPath
@@ -40,6 +43,7 @@ import Dispatch
 
     return try process.launchBash(
         with: command,
+        inputHandle: inputHandle,
         outputHandle: outputHandle,
         errorHandle: errorHandle,
         shellType: shellType
@@ -52,6 +56,8 @@ import Dispatch
  *  - parameter commands: The commands to run
  *  - parameter path: The path to execute the commands at (defaults to current folder)
  *  - parameter process: Which process to use to perform the command (default: A new one)
+ *  - parameter inputHandle: Any `FileHandle` that any input (STDIN) should be redirected to
+ *              (at the moment this is only supported on macOS)
  *  - parameter outputHandle: Any `FileHandle` that any output (STDOUT) should be redirected to
  *              (at the moment this is only supported on macOS)
  *  - parameter errorHandle: Any `FileHandle` that any error output (STDERR) should be redirected to
@@ -67,6 +73,7 @@ import Dispatch
     to commands: [String],
     at path: String = ".",
     process: Process = .init(),
+    inputHandle: FileHandle? = nil,
     outputHandle: FileHandle? = nil,
     errorHandle: FileHandle? = nil
 ) throws -> String {
@@ -76,6 +83,7 @@ import Dispatch
         to: command,
         at: path,
         process: process,
+        inputHandle: inputHandle,
         outputHandle: outputHandle,
         errorHandle: errorHandle
     )
@@ -87,6 +95,7 @@ import Dispatch
  *  - parameter command: The command to run
  *  - parameter path: The path to execute the commands at (defaults to current folder)
  *  - parameter process: Which process to use to perform the command (default: A new one)
+ *  - parameter inputHandle: Any `FileHandle` that any input (STDIN) should be redirected to
  *  - parameter outputHandle: Any `FileHandle` that any output (STDOUT) should be redirected to
  *  - parameter errorHandle: Any `FileHandle` that any error output (STDERR) should be redirected to
  *
@@ -102,6 +111,7 @@ import Dispatch
     to command: ShellOutCommand,
     at path: String = ".",
     process: Process = .init(),
+    inputHandle: FileHandle? = nil,
     outputHandle: FileHandle? = nil,
     errorHandle: FileHandle? = nil,
     shellType: ShellType = .bashPath
@@ -110,6 +120,7 @@ import Dispatch
         to: command.string,
         at: path,
         process: process,
+        inputHandle: inputHandle,
         outputHandle: outputHandle,
         errorHandle: errorHandle,
         shellType: shellType
@@ -301,11 +312,6 @@ public extension ShellOutCommand {
         return ShellOutCommand(string: "swift package update")
     }
 
-    /// Generate an Xcode project for a Swift package
-    static func generateSwiftPackageXcodeProject() -> ShellOutCommand {
-        return ShellOutCommand(string: "swift package generate-xcodeproj")
-    }
-
     /// Build a Swift package using a given configuration (see SwiftBuildConfiguration for options)
     static func buildSwiftPackage(withConfiguration configuration: SwiftBuildConfiguration = .debug) -> ShellOutCommand {
         return ShellOutCommand(string: "swift build -c \(configuration.rawValue)")
@@ -351,13 +357,9 @@ extension ShellOutError: LocalizedError {
 // MARK: - Private
 
 private extension Process {
-    @discardableResult func launchBash(with command: String, outputHandle: FileHandle? = nil, errorHandle: FileHandle? = nil, shellType: ShellType = .bashPath) throws -> String {
+    @discardableResult func launchBash(with command: String, inputHandle: FileHandle? = nil, outputHandle: FileHandle? = nil, errorHandle: FileHandle? = nil, shellType: ShellType = .bashPath) throws -> String {
 
-        if #available(OSX 10.13, *) {
-            executableURL = URL(fileURLWithPath: "/bin/bash")
-        } else {
-            launchPath = shellType.rawValue
-        }
+        launchPath = shellType.rawValue
 
         arguments = ["-c", command]
 
@@ -369,6 +371,8 @@ private extension Process {
 
         var outputData = Data()
         var errorData = Data()
+
+        standardInput = inputHandle
 
         let outputPipe = Pipe()
         standardOutput = outputPipe

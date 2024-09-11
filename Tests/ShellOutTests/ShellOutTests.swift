@@ -13,6 +13,17 @@ class ShellOutTests: XCTestCase {
         XCTAssertTrue(uptime.contains("load average"))
     }
 
+    func testWithInputData() throws {
+        let pipe = Pipe()
+
+        // echo "Hello world"
+        let _ = try shellOut(to: "echo", arguments: ["Hello world"], outputHandle: pipe.fileHandleForWriting)
+
+        // simulate `echo "Hello world" | cat`
+        let cat = try shellOut(to: "cat", inputHandle: pipe.fileHandleForReading)
+        XCTAssertEqual(cat, "Hello world")
+    }
+
     func testWithArguments() throws {
         let echo = try shellOut(to: "echo", arguments: ["Hello world"])
         XCTAssertEqual(echo, "Hello world")
@@ -169,10 +180,6 @@ class ShellOutTests: XCTestCase {
         // Build the package and verify that there's a .build folder
         try shellOut(to: .buildSwiftPackage(), at: packagePath)
         XCTAssertTrue(try shellOut(to: "ls -a", at: packagePath).contains(".build"))
-
-        // Generate an Xcode project
-        try shellOut(to: .generateSwiftPackageXcodeProject(), at: packagePath)
-        XCTAssertTrue(try shellOut(to: "ls -a", at: packagePath).contains("SwiftPackageManagerTest.xcodeproj"))
     }
     
     func testZshShellCommands() throws {
