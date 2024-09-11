@@ -76,9 +76,15 @@ try shellOut(to: .buildSwiftPackage())
 try shellOut(to: .testSwiftPackage())
 ```
 
-Don't see what you're looking for in the list above? You can easily define your own commands using `ShellOutCommand`. If you've made a command you think should be included among the built-in ones, feel free to [open a PR](https://github.com/JohnSundell/ShellOut/pull/new/master)!
+Don't see what you're looking for in the list above? You can easily define your own commands using `ShellOutCommand`. If you've made a command you think should be included among the built-in ones, feel free to [open a PR](https://github.com/JohnSundell/ShellOut/pull/new/master) in original author repository.
 
 ## Installation
 
-- Add `.package(url: "https://github.com/Maxim-Lanskoy/ShellOut.git", from: "2.3.1")` to your `Package.swift` file's `dependencies`.
-- Update your packages using `$ swift package update`.
+- Add next line to your `Package.swift` file's `dependencies`:
+
+```bash
+.package(url: "https://github.com/Maxim-Lanskoy/ShellOut.git", .upToNextMajor(from: "2.4.0")
+```
+
+
+
