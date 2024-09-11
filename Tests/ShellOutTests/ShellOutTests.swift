@@ -1,6 +1,6 @@
 /**
- *  ShellOut
- *  Copyright (c) John Sundell 2017
+ *  ShellOut | ShellOutTests.swift
+ *  Copyright (c) John Sundell 2017, Maxim Lanskoy 2024.
  *  Licensed under the MIT license. See LICENSE file.
  */
 

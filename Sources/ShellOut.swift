@@ -1,6 +1,6 @@
 /**
- *  ShellOut
- *  Copyright (c) John Sundell 2017
+ *  ShellOut | ShellOut.swift
+ *  Copyright (c) John Sundell 2017, Maxim Lanskoy 2024.
  *  Licensed under the MIT license. See LICENSE file.
  */
 
@@ -266,22 +266,6 @@ public extension ShellOutCommand {
     }
 }
 
-/// Marathon commands
-public extension ShellOutCommand {
-    /// Run a Marathon Swift script
-    static func runMarathonScript(at path: String, arguments: [String] = []) -> ShellOutCommand {
-        let command = "marathon run".appending(argument: path)
-                                    .appending(arguments: arguments)
-
-        return ShellOutCommand(string: command)
-    }
-
-    /// Update all Swift packages managed by Marathon
-    static func updateMarathonPackages() -> ShellOutCommand {
-        return ShellOutCommand(string: "marathon update")
-    }
-}
-
 /// Swift Package Manager commands
 public extension ShellOutCommand {
     /// Enum defining available package types when using the Swift Package Manager
@@ -320,28 +304,6 @@ public extension ShellOutCommand {
     /// Test a Swift package using a given configuration (see SwiftBuildConfiguration for options)
     static func testSwiftPackage(withConfiguration configuration: SwiftBuildConfiguration = .debug) -> ShellOutCommand {
         return ShellOutCommand(string: "swift test -c \(configuration.rawValue)")
-    }
-}
-
-/// Fastlane commands
-public extension ShellOutCommand {
-    /// Run Fastlane using a given lane
-    static func runFastlane(usingLane lane: String) -> ShellOutCommand {
-        let command = "fastlane".appending(argument: lane)
-        return ShellOutCommand(string: command)
-    }
-}
-
-/// CocoaPods commands
-public extension ShellOutCommand {
-    /// Update all CocoaPods dependencies
-    static func updateCocoaPods() -> ShellOutCommand {
-        return ShellOutCommand(string: "pod update")
-    }
-
-    /// Install all CocoaPods dependencies
-    static func installCocoaPods() -> ShellOutCommand {
-        return ShellOutCommand(string: "pod install")
     }
 }
 

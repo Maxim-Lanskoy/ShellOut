@@ -1,8 +1,8 @@
-// swift-tools-version:4.2
+// swift-tools-version: 5.9
 
 /**
- *  ShellOut
- *  Copyright (c) John Sundell 2017
+ *  ShellOut | Package.swift
+ *  Copyright (c) John Sundell 2017, Maxim Lanskoy 2024.
  *  Licensed under the MIT license. See LICENSE file.
  */
 
