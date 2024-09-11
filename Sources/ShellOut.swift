@@ -352,8 +352,13 @@ extension ShellOutError: LocalizedError {
 
 private extension Process {
     @discardableResult func launchBash(with command: String, outputHandle: FileHandle? = nil, errorHandle: FileHandle? = nil, shellType: ShellType = .bashPath) throws -> String {
-        // Default shell path is set to Bash
-        launchPath = shellType.rawValue
+
+        if #available(OSX 10.13, *) {
+            executableURL = URL(fileURLWithPath: "/bin/bash")
+        } else {
+            launchPath = shellType.rawValue
+        }
+
         arguments = ["-c", command]
 
         // Because FileHandle's readabilityHandler might be called from a
@@ -371,7 +376,6 @@ private extension Process {
         let errorPipe = Pipe()
         standardError = errorPipe
 
-        #if !os(Linux)
         outputPipe.fileHandleForReading.readabilityHandler = { handler in
             let data = handler.availableData
             outputQueue.async {
@@ -387,16 +391,12 @@ private extension Process {
                 errorHandle?.write(data)
             }
         }
-        #endif
 
-        launch()
-
-        #if os(Linux)
-        outputQueue.sync {
-            outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
-            errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+        if #available(OSX 10.13, *) {
+            try run()
+        } else {
+            launch()
         }
-        #endif
 
         waitUntilExit()
 
@@ -408,14 +408,12 @@ private extension Process {
             handle.closeFile()
         }
 
-        #if !os(Linux)
         outputPipe.fileHandleForReading.readabilityHandler = nil
         errorPipe.fileHandleForReading.readabilityHandler = nil
         if #available(macOS 10.15, *) {
             try outputPipe.fileHandleForReading.close()
             try errorPipe.fileHandleForReading.close()
         }
-        #endif
 
         // Block until all writes have occurred to outputData and errorData,
         // and then read the data back out.
