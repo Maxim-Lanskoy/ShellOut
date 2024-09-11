@@ -11,6 +11,7 @@ import XCTest
 extension ShellOutTests {
     static var allTests = [
         ("testWithoutArguments", testWithoutArguments),
+        ("testWithInputData", testWithInputData),
         ("testWithArguments", testWithArguments),
         ("testWithInlineArguments", testWithInlineArguments),
         ("testSingleCommandAtPath", testSingleCommandAtPath),

@@ -2,7 +2,7 @@
 
 /**
  *  ShellOut | Package.swift
- *  Copyright (c) John Sundell 2017, Maxim Lanskoy 2024.
+ *  Copyright (c) John Sundell, Annalise Mariottini 2017, Emil Wojtaszek 2018, John Mueller 2020, Leonardo Diaz 2021, Maxim Lanskoy 2024.
  *  Licensed under the MIT license. See LICENSE file.
  */
 
